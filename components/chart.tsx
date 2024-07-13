@@ -163,7 +163,7 @@ export function ZoomableChart() {
 
     return (
         <Card className="w-full h-full">
-            <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+            <CardHeader className="flex-col items-stretch space-y-0 border-b p-0 sm:flex-row hidden sm:flex">
                 <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
                     <CardTitle>Zoomable Chart Demo</CardTitle>
                 </div>
@@ -180,14 +180,14 @@ export function ZoomableChart() {
                     </div>
                 </div>
             </CardHeader>
-            <CardContent className="px-2 sm:p-6 h-[calc(100%-150px)]">
+            <CardContent className="px-2 sm:p-6 h-full sm:h-[calc(100%-150px)]">
                 <ChartContainer
                     config={chartConfig}
                     className="w-full h-full"
                 >
                     <div className="h-full" onWheel={handleWheel} ref={chartRef}>
-                        <div className="flex justify-end mb-4">
-                            <Button variant="outline" onClick={handleReset} disabled={!startTime && !endTime}>
+                        <div className="flex justify-end my-2 sm:mb-4">
+                            <Button variant="outline" onClick={handleReset} disabled={!startTime && !endTime} className="text-xs sm:text-sm">
                                 Reset
                             </Button>
                         </div>
@@ -195,10 +195,10 @@ export function ZoomableChart() {
                             <ComposedChart
                                 data={data}
                                 margin={{
-                                    top: 20,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 5,
+                                    top: 10,
+                                    right: 10,
+                                    left: 0,
+                                    bottom: 0,
                                 }}
                                 onMouseDown={handleMouseDown}
                                 onMouseMove={handleMouseMove}
@@ -217,16 +217,21 @@ export function ZoomableChart() {
                                     tickFormatter={formatXAxis}
                                     tickLine={false}
                                     axisLine={false}
-                                    tickMargin={8}
-                                    minTickGap={32}
-                                    style={{ userSelect: 'none' }}
+                                    tickMargin={4}
+                                    minTickGap={16}
+                                    style={{ fontSize: '10px', userSelect: 'none' }}
                                 />
-                                <YAxis tickLine={false} axisLine={false} style={{ userSelect: 'none' }} />
+                                <YAxis
+                                    tickLine={false}
+                                    axisLine={false}
+                                    style={{ fontSize: '10px', userSelect: 'none' }}
+                                    width={30}
+                                />
                                 <ChartTooltip
                                     cursor={false}
                                     content={
                                         <ChartTooltipContent
-                                            className="w-[200px] font-mono"
+                                            className="w-[150px] sm:w-[200px] font-mono text-xs sm:text-sm"
                                             nameKey="events"
                                             labelFormatter={(value) => new Date(value).toLocaleString()}
                                         />

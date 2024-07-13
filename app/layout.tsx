@@ -20,14 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} forcedTheme="dark">
-          <div className="hidden sm:block">
-            {children}
-          </div>
-          <div className="sm:hidden flex p-4 items-center justify-center h-screen">
-            <p className="text-center text-lg">
-              This demo is not viewable on mobile devices.
-            </p>
-          </div>
+          {children}
         </ThemeProvider>
         <Analytics />
       </body>
