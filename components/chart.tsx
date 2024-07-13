@@ -16,8 +16,6 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 
-export const description = "A histogram of log entries"
-
 const chartConfig = {
     logs: {
         label: "Log Entries",
@@ -99,12 +97,7 @@ export function ZoomableChart() {
         <Card className="w-full h-full">
             <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
                 <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-                    <CardTitle>Log Histogram</CardTitle>
-                    <CardDescription>
-                        {startTime && endTime
-                            ? `Showing log entries from ${new Date(startTime).toLocaleString()} to ${new Date(endTime).toLocaleString()}`
-                            : "Showing log entries for the last 24 hours"}
-                    </CardDescription>
+                    <CardTitle>Zoomable Chart Demo</CardTitle>
                 </div>
                 <div className="flex">
                     <button
