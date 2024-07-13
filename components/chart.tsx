@@ -135,7 +135,7 @@ export function ZoomableChart() {
                 >
                     <div className="flex justify-end mb-4">
                         <Button variant="outline" onClick={handleZoomOut} disabled={!startTime && !endTime}>
-                            Zoom Out
+                            Reset
                         </Button>
                     </div>
                     <ResponsiveContainer width="100%" height="100%">
