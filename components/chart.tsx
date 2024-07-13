@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo } from "react"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ComposedChart, ReferenceArea, ResponsiveContainer } from "recharts"
+import { Area, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ComposedChart, ReferenceArea, ResponsiveContainer } from "recharts"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -12,9 +12,11 @@ import {
 import {
     ChartConfig,
     ChartContainer,
+    ChartTooltip,
     ChartTooltipContent,
+    ChartLegend,
+    ChartLegendContent,
 } from "@/components/ui/chart"
-import { MouseEvent } from 'react';
 
 const chartConfig = {
     events: {
@@ -22,6 +24,11 @@ const chartConfig = {
         color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig
+
+type DataPoint = {
+    date: string;
+    events: number;
+};
 
 const seedRandom = (seed: number) => {
     const x = Math.sin(seed++) * 10000;
@@ -60,7 +67,7 @@ const simulateData = (start?: string, end?: string) => {
 };
 
 export function ZoomableChart() {
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<DataPoint[]>([]);
     const [refAreaLeft, setRefAreaLeft] = useState<string | null>(null);
     const [refAreaRight, setRefAreaRight] = useState<string | null>(null);
     const [startTime, setStartTime] = useState<string | null>(null);
@@ -158,14 +165,19 @@ export function ZoomableChart() {
                                         <stop offset="95%" stopColor={chartConfig.events.color} stopOpacity={0.1} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" />
+                                <CartesianGrid vertical={false} />
                                 <XAxis
                                     dataKey="date"
                                     tickFormatter={formatXAxis}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    minTickGap={32}
                                     style={{ userSelect: 'none' }}
                                 />
-                                <YAxis style={{ userSelect: 'none' }} />
-                                <Tooltip
+                                <YAxis tickLine={false} axisLine={false} style={{ userSelect: 'none' }} />
+                                <ChartTooltip
+                                    cursor={false}
                                     content={
                                         <ChartTooltipContent
                                             className="w-[200px]"
@@ -174,7 +186,7 @@ export function ZoomableChart() {
                                         />
                                     }
                                 />
-                                <Legend />
+                                <ChartLegend content={<ChartLegendContent />} />
                                 <Area
                                     type="monotone"
                                     dataKey="events"
