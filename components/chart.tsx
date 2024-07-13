@@ -72,11 +72,14 @@ export function ZoomableChart() {
     const [refAreaRight, setRefAreaRight] = useState<string | null>(null);
     const [startTime, setStartTime] = useState<string | null>(null);
     const [endTime, setEndTime] = useState<string | null>(null);
+    const [originalData, setOriginalData] = useState<DataPoint[]>([]);
 
     // Simulate data
     useEffect(() => {
-        setData(simulateData(startTime || undefined, endTime || undefined));
-    }, [startTime, endTime]);
+        const simulatedData = simulateData();
+        setData(simulatedData);
+        setOriginalData(simulatedData);
+    }, []);
 
     // Calculate total
     const total = useMemo(
@@ -101,6 +104,10 @@ export function ZoomableChart() {
             const [left, right] = [refAreaLeft, refAreaRight].sort();
             setStartTime(left);
             setEndTime(right);
+            const zoomedData = originalData.filter(
+                (d) => d.date >= left && d.date <= right
+            );
+            setData(zoomedData);
         }
         setRefAreaLeft(null);
         setRefAreaRight(null);
@@ -109,6 +116,7 @@ export function ZoomableChart() {
     const handleZoomOut = () => {
         setStartTime(null);
         setEndTime(null);
+        setData(originalData);
     };
 
     const formatXAxis = (tickItem: string) => {
@@ -180,7 +188,7 @@ export function ZoomableChart() {
                                     cursor={false}
                                     content={
                                         <ChartTooltipContent
-                                            className="w-[200px]"
+                                            className="w-[200px] font-mono"
                                             nameKey="events"
                                             labelFormatter={(value) => new Date(value).toLocaleString()}
                                         />
@@ -201,7 +209,7 @@ export function ZoomableChart() {
                                         x2={refAreaRight}
                                         strokeOpacity={0.3}
                                         fill="hsl(var(--foreground))"
-                                        fillOpacity={0.1}
+                                        fillOpacity={0.05}
                                     />
                                 )}
                             </ComposedChart>
