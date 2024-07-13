@@ -36,34 +36,24 @@ const seedRandom = (seed: number) => {
 };
 
 // Fancy data simulation written by Claude
-const simulateData = (start?: string, end?: string) => {
-    const intervalMs = 600000;
-    const startDate = start ? new Date(start) : new Date('2024-01-01T00:00:00Z');
-    const endDate = end ? new Date(end) : new Date('2024-01-02T00:00:00Z');
+const simulateData = (start = '2024-01-01T00:00:00Z', end = '2024-01-02T00:00:00Z') => {
     const simulatedData = [];
     let baseValue = 50;
-    const trendFactor = 0.5;
-    const volatilityFactor = 0.2;
-
-    for (let currentDate = new Date(startDate); currentDate <= endDate; currentDate.setTime(currentDate.getTime() + intervalMs)) {
+    for (let currentDate = new Date(start); currentDate <= new Date(end); currentDate.setTime(currentDate.getTime() + 600000)) {
         const seed = currentDate.getTime();
-        const randomVariation = (seedRandom(seed) - 0.5) * 20;
-        const trendIncrease = trendFactor * (currentDate.getTime() - startDate.getTime()) / (endDate.getTime() - startDate.getTime()) * 100;
-        const volatilitySpike = seedRandom(seed + 1) < 0.1 ? (seedRandom(seed + 2) - 0.5) * 50 : 0;
-        const oscillation = Math.sin(currentDate.getTime() / 3600000) * 10;
-
         baseValue = Math.max(
-            (baseValue + trendIncrease + randomVariation + volatilitySpike + oscillation) *
-            (1 + (seedRandom(seed + 3) - 0.5) * volatilityFactor),
+            (baseValue + 0.5 * (currentDate.getTime() - new Date(start).getTime()) / (new Date(end).getTime() - new Date(start).getTime()) * 100 +
+                (seedRandom(seed) - 0.5) * 20 +
+                (seedRandom(seed + 1) < 0.1 ? (seedRandom(seed + 2) - 0.5) * 50 : 0) +
+                Math.sin(currentDate.getTime() / 3600000) * 10) *
+            (1 + (seedRandom(seed + 3) - 0.5) * 0.2),
             1
         );
-
         simulatedData.push({
             date: currentDate.toISOString(),
             events: Math.max(Math.floor(baseValue), 1)
         });
     }
-
     return simulatedData;
 };
 
@@ -131,6 +121,9 @@ export function ZoomableChart() {
             <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
                 <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
                     <CardTitle>Zoomable Chart Demo</CardTitle>
+                    <CardDescription>
+                        Basic Implementation of a zooming
+                    </CardDescription>
                 </div>
                 <div className="flex">
                     <div
