@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo } from "react"
-import { Area, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ComposedChart, ReferenceArea, ResponsiveContainer } from "recharts"
+import { Area, CartesianGrid, XAxis, YAxis, ComposedChart, ReferenceArea, ResponsiveContainer } from "recharts"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -20,7 +20,7 @@ import {
 
 const chartConfig = {
     events: {
-        label: "Event Entries",
+        label: "Events",
         color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig
@@ -127,7 +127,7 @@ export function ZoomableChart() {
                 </div>
                 <div className="flex">
                     <div
-                        className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                        className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l bg-muted/10 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
                     >
                         <span className="text-xs text-muted-foreground">
                             Events
