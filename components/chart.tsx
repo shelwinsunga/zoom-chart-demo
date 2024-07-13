@@ -1,11 +1,10 @@
 'use client'
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import { Area, CartesianGrid, XAxis, YAxis, ComposedChart, ReferenceArea, ResponsiveContainer } from "recharts"
 import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -35,7 +34,6 @@ const seedRandom = (seed: number) => {
     return x - Math.floor(x);
 };
 
-// Fancy data simulation written by Claude
 const simulateData = (start = '2024-01-01T00:00:00Z', end = '2024-01-02T00:00:00Z') => {
     const simulatedData = [];
     let baseValue = 50;
@@ -65,15 +63,26 @@ export function ZoomableChart() {
     const [endTime, setEndTime] = useState<string | null>(null);
     const [originalData, setOriginalData] = useState<DataPoint[]>([]);
     const [isSelecting, setIsSelecting] = useState(false);
+    const [isZooming, setIsZooming] = useState(false);
+    const chartRef = useRef<HTMLDivElement>(null);
 
-    // Simulate data
     useEffect(() => {
         const simulatedData = simulateData();
         setData(simulatedData);
         setOriginalData(simulatedData);
+        setStartTime(simulatedData[0].date);
+        setEndTime(simulatedData[simulatedData.length - 1].date);
     }, []);
 
-    // Calculate total
+    useEffect(() => {
+        if (startTime && endTime && !isZooming) {
+            const zoomedData = originalData.filter(
+                (d) => d.date >= startTime && d.date <= endTime
+            );
+            setData(zoomedData);
+        }
+    }, [startTime, endTime, originalData, isZooming]);
+
     const total = useMemo(
         () => data.reduce((acc, curr) => acc + curr.events, 0),
         [data]
@@ -97,7 +106,6 @@ export function ZoomableChart() {
             const [left, right] = [refAreaLeft, refAreaRight].sort();
             setStartTime(left);
             setEndTime(right);
-            // Filter data to only show the zoomed in range
             const zoomedData = originalData.filter(
                 (d) => d.date >= left && d.date <= right
             );
@@ -109,9 +117,43 @@ export function ZoomableChart() {
     };
 
     const handleZoomOut = () => {
-        setStartTime(null);
-        setEndTime(null);
+        setStartTime(originalData[0].date);
+        setEndTime(originalData[originalData.length - 1].date);
         setData(originalData);
+    };
+
+    const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        if (!originalData.length || !chartRef.current) return;
+
+        setIsZooming(true);
+
+        const zoomFactor = 0.1;
+        const direction = e.deltaY < 0 ? 1 : -1;  // Changed this line
+        const currentRange = new Date(endTime || originalData[originalData.length - 1].date).getTime() -
+            new Date(startTime || originalData[0].date).getTime();
+        const zoomAmount = currentRange * zoomFactor * direction;
+
+        const chartRect = chartRef.current.getBoundingClientRect();
+        const mouseX = e.clientX - chartRect.left;
+        const chartWidth = chartRect.width;
+        const mousePercentage = mouseX / chartWidth;
+
+        const currentStartTime = new Date(startTime || originalData[0].date).getTime();
+        const currentEndTime = new Date(endTime || originalData[originalData.length - 1].date).getTime();
+
+        const newStartTime = new Date(currentStartTime + zoomAmount * mousePercentage);
+        const newEndTime = new Date(currentEndTime - zoomAmount * (1 - mousePercentage));
+
+        setStartTime(newStartTime.toISOString());
+        setEndTime(newEndTime.toISOString());
+
+        const zoomedData = originalData.filter(
+            (d) => new Date(d.date) >= newStartTime && new Date(d.date) <= newEndTime
+        );
+        setData(zoomedData);
+
+        setTimeout(() => setIsZooming(false), 300);
     };
 
     const formatXAxis = (tickItem: string) => {
@@ -143,7 +185,7 @@ export function ZoomableChart() {
                     config={chartConfig}
                     className="w-full h-full"
                 >
-                    <div className="h-full">
+                    <div className="h-full" onWheel={handleWheel} ref={chartRef}>
                         <div className="flex justify-end mb-4">
                             <Button variant="outline" onClick={handleZoomOut} disabled={!startTime && !endTime}>
                                 Reset
@@ -197,7 +239,7 @@ export function ZoomableChart() {
                                     stroke={chartConfig.events.color}
                                     fillOpacity={1}
                                     fill="url(#colorEvents)"
-                                    isAnimationActive={false}
+                                    isAnimationActive={true}
                                 />
                                 {refAreaLeft && refAreaRight && (
                                     <ReferenceArea
