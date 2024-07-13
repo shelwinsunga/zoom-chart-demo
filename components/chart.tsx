@@ -19,7 +19,7 @@ import {
 const chartConfig = {
     logs: {
         label: "Log Entries",
-        color: "hsl(var(--chart-2))",
+        color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig
 
@@ -132,6 +132,12 @@ export function ZoomableChart() {
                             onMouseMove={handleMouseMove}
                             onMouseUp={handleMouseUp}
                         >
+                            <defs>
+                                <linearGradient id="colorLogs" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={chartConfig.logs.color} stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor={chartConfig.logs.color} stopOpacity={0.1} />
+                                </linearGradient>
+                            </defs>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis
                                 dataKey="date"
@@ -153,7 +159,8 @@ export function ZoomableChart() {
                                 type="monotone"
                                 dataKey="logs"
                                 stroke={chartConfig.logs.color}
-                                fill={chartConfig.logs.color}
+                                fillOpacity={1}
+                                fill="url(#colorLogs)"
                                 isAnimationActive={false}
                             />
                             {refAreaLeft && refAreaRight && (
