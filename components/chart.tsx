@@ -17,17 +17,17 @@ import {
     ChartLegendContent,
 } from "@/components/ui/chart"
 
+type DataPoint = {
+    date: string;
+    events: number;
+};
+
 const chartConfig = {
     events: {
         label: "Events",
         color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig
-
-type DataPoint = {
-    date: string;
-    events: number;
-};
 
 const seedRandom = (seed: number) => {
     const x = Math.sin(seed++) * 10000;
