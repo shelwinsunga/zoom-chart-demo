@@ -64,6 +64,7 @@ export function ZoomableChart() {
     const [startTime, setStartTime] = useState<string | null>(null);
     const [endTime, setEndTime] = useState<string | null>(null);
     const [originalData, setOriginalData] = useState<DataPoint[]>([]);
+    const [isSelecting, setIsSelecting] = useState(false);
 
     // Simulate data
     useEffect(() => {
@@ -81,11 +82,12 @@ export function ZoomableChart() {
     const handleMouseDown = (e: any) => {
         if (e.activeLabel) {
             setRefAreaLeft(e.activeLabel);
+            setIsSelecting(true);
         }
     };
 
     const handleMouseMove = (e: any) => {
-        if (refAreaLeft && e.activeLabel) {
+        if (isSelecting && e.activeLabel) {
             setRefAreaRight(e.activeLabel);
         }
     };
@@ -103,6 +105,7 @@ export function ZoomableChart() {
         }
         setRefAreaLeft(null);
         setRefAreaRight(null);
+        setIsSelecting(false);
     };
 
     const handleZoomOut = () => {
@@ -158,6 +161,7 @@ export function ZoomableChart() {
                                 onMouseDown={handleMouseDown}
                                 onMouseMove={handleMouseMove}
                                 onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
                             >
                                 <defs>
                                     <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
