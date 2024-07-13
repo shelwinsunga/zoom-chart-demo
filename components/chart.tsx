@@ -57,10 +57,12 @@ export function ZoomableChart() {
     const [startTime, setStartTime] = useState<string | null>(null);
     const [endTime, setEndTime] = useState<string | null>(null);
 
+    // Simulate data
     useEffect(() => {
         setData(simulateData(startTime, endTime));
     }, [startTime, endTime]);
 
+    // Calculate total
     const total = useMemo(
         () => data.reduce((acc, curr) => acc + curr.logs, 0),
         [data]
@@ -100,9 +102,8 @@ export function ZoomableChart() {
                     <CardTitle>Zoomable Chart Demo</CardTitle>
                 </div>
                 <div className="flex">
-                    <button
-                        data-active={true}
-                        className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                    <div
+                        className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
                     >
                         <span className="text-xs text-muted-foreground">
                             Events
@@ -110,7 +111,7 @@ export function ZoomableChart() {
                         <span className="text-lg font-bold leading-none sm:text-3xl">
                             {total.toLocaleString()}
                         </span>
-                    </button>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="px-2 sm:p-6 h-[calc(100%-150px)]">
