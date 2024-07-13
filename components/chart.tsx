@@ -79,7 +79,7 @@ export function ZoomableChart() {
             const zoomedData = originalData.filter(
                 (d) => d.date >= startTime && d.date <= endTime
             );
-            setData(zoomedData);
+            setData(zoomedData.length > 1 ? zoomedData : originalData.slice(0, 2));
         }
     }, [startTime, endTime, originalData, isZooming]);
 
@@ -109,7 +109,7 @@ export function ZoomableChart() {
             const zoomedData = originalData.filter(
                 (d) => d.date >= left && d.date <= right
             );
-            setData(zoomedData);
+            setData(zoomedData.length > 1 ? zoomedData : originalData.slice(0, 2));
         }
         setRefAreaLeft(null);
         setRefAreaRight(null);
@@ -151,7 +151,7 @@ export function ZoomableChart() {
         const zoomedData = originalData.filter(
             (d) => new Date(d.date) >= newStartTime && new Date(d.date) <= newEndTime
         );
-        setData(zoomedData);
+        setData(zoomedData.length > 1 ? zoomedData : originalData.slice(0, 2));
 
         setTimeout(() => setIsZooming(false), 300);
     };
