@@ -116,7 +116,7 @@ export function ZoomableChart() {
         setIsSelecting(false);
     };
 
-    const handleZoomOut = () => {
+    const handleReset = () => {
         setStartTime(originalData[0].date);
         setEndTime(originalData[originalData.length - 1].date);
         setData(originalData);
@@ -187,7 +187,7 @@ export function ZoomableChart() {
                 >
                     <div className="h-full" onWheel={handleWheel} ref={chartRef}>
                         <div className="flex justify-end mb-4">
-                            <Button variant="outline" onClick={handleZoomOut} disabled={!startTime && !endTime}>
+                            <Button variant="outline" onClick={handleReset} disabled={!startTime && !endTime}>
                                 Reset
                             </Button>
                         </div>
