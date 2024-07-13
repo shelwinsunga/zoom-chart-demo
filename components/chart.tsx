@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from "react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ComposedChart, ReferenceArea, ResponsiveContainer } from "recharts"
 import { Button } from "@/components/ui/button"
-
 import {
     Card,
     CardContent,
@@ -18,8 +17,8 @@ import {
 } from "@/components/ui/chart"
 
 const chartConfig = {
-    logs: {
-        label: "Log Entries",
+    events: {
+        label: "Event Entries",
         color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig
@@ -53,7 +52,7 @@ const simulateData = (start?: string, end?: string) => {
 
         simulatedData.push({
             date: currentDate.toISOString(),
-            logs: Math.max(Math.floor(baseValue), 1)
+            events: Math.max(Math.floor(baseValue), 1)
         });
     }
 
@@ -74,7 +73,7 @@ export function ZoomableChart() {
 
     // Calculate total
     const total = useMemo(
-        () => data.reduce((acc, curr) => acc + curr.logs, 0),
+        () => data.reduce((acc, curr) => acc + curr.events, 0),
         [data]
     )
 
@@ -153,9 +152,9 @@ export function ZoomableChart() {
                             onMouseUp={handleMouseUp}
                         >
                             <defs>
-                                <linearGradient id="colorLogs" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={chartConfig.logs.color} stopOpacity={0.8} />
-                                    <stop offset="95%" stopColor={chartConfig.logs.color} stopOpacity={0.1} />
+                                <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor={chartConfig.events.color} stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor={chartConfig.events.color} stopOpacity={0.1} />
                                 </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" />
@@ -169,7 +168,7 @@ export function ZoomableChart() {
                                 content={
                                     <ChartTooltipContent
                                         className="w-[200px]"
-                                        nameKey="logs"
+                                        nameKey="events"
                                         labelFormatter={(value) => new Date(value).toLocaleString()}
                                     />
                                 }
@@ -177,10 +176,10 @@ export function ZoomableChart() {
                             <Legend />
                             <Area
                                 type="monotone"
-                                dataKey="logs"
-                                stroke={chartConfig.logs.color}
+                                dataKey="events"
+                                stroke={chartConfig.events.color}
                                 fillOpacity={1}
-                                fill="url(#colorLogs)"
+                                fill="url(#colorEvents)"
                                 isAnimationActive={false}
                             />
                             {refAreaLeft && refAreaRight && (
@@ -188,8 +187,8 @@ export function ZoomableChart() {
                                     x1={refAreaLeft}
                                     x2={refAreaRight}
                                     strokeOpacity={0.3}
-                                    fill="hsl(var(--primary))"
-                                    fillOpacity={0.3}
+                                    fill="hsl(var(--foreground))"
+                                    fillOpacity={0.1}
                                 />
                             )}
                         </ComposedChart>
