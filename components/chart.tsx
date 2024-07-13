@@ -2,6 +2,7 @@
 'use client'
 import { useState, useEffect, useMemo } from "react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ComposedChart, ReferenceArea, ResponsiveContainer } from "recharts"
+import { Button } from "@/components/ui/button"
 
 import {
     Card,
@@ -29,22 +30,31 @@ const seedRandom = (seed: number) => {
 };
 
 const simulateData = (start?: string, end?: string) => {
-    const now = new Date();
-    const intervalMs = 600000; // 10 minutes
-
-    let startDate = start ? new Date(start) : new Date(now.getTime() - 50 * intervalMs);
-    const endDate = end ? new Date(end) : now;
-
+    const intervalMs = 600000;
+    const startDate = start ? new Date(start) : new Date('2024-01-01T00:00:00Z');
+    const endDate = end ? new Date(end) : new Date('2024-01-02T00:00:00Z');
     const simulatedData = [];
-    let currentDate = new Date(startDate);
+    let baseValue = 50;
+    const trendFactor = 0.5;
+    const volatilityFactor = 0.2;
 
-    while (currentDate <= endDate) {
+    for (let currentDate = new Date(startDate); currentDate <= endDate; currentDate.setTime(currentDate.getTime() + intervalMs)) {
         const seed = currentDate.getTime();
+        const randomVariation = (seedRandom(seed) - 0.5) * 20;
+        const trendIncrease = trendFactor * (currentDate.getTime() - startDate.getTime()) / (endDate.getTime() - startDate.getTime()) * 100;
+        const volatilitySpike = seedRandom(seed + 1) < 0.1 ? (seedRandom(seed + 2) - 0.5) * 50 : 0;
+        const oscillation = Math.sin(currentDate.getTime() / 3600000) * 10;
+
+        baseValue = Math.max(
+            (baseValue + trendIncrease + randomVariation + volatilitySpike + oscillation) *
+            (1 + (seedRandom(seed + 3) - 0.5) * volatilityFactor),
+            1
+        );
+
         simulatedData.push({
             date: currentDate.toISOString(),
-            logs: Math.floor(seedRandom(seed) * 100) + 1
+            logs: Math.max(Math.floor(baseValue), 1)
         });
-        currentDate = new Date(currentDate.getTime() + intervalMs);
     }
 
     return simulatedData;
@@ -90,6 +100,11 @@ export function ZoomableChart() {
         setRefAreaRight(null);
     };
 
+    const handleZoomOut = () => {
+        setStartTime(null);
+        setEndTime(null);
+    };
+
     const formatXAxis = (tickItem: string) => {
         const date = new Date(tickItem);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -119,6 +134,11 @@ export function ZoomableChart() {
                     config={chartConfig}
                     className="w-full h-full"
                 >
+                    <div className="flex justify-end mb-4">
+                        <Button variant="outline" onClick={handleZoomOut} disabled={!startTime && !endTime}>
+                            Zoom Out
+                        </Button>
+                    </div>
                     <ResponsiveContainer width="100%" height="100%">
                         <ComposedChart
                             data={data}
