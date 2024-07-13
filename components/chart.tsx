@@ -129,7 +129,7 @@ export function ZoomableChart() {
         setIsZooming(true);
 
         const zoomFactor = 0.1;
-        const direction = e.deltaY < 0 ? 1 : -1;  // Changed this line
+        const direction = e.deltaY < 0 ? 1 : -1;
         const currentRange = new Date(endTime || originalData[originalData.length - 1].date).getTime() -
             new Date(startTime || originalData[0].date).getTime();
         const zoomAmount = currentRange * zoomFactor * direction;
@@ -151,8 +151,8 @@ export function ZoomableChart() {
         const zoomedData = originalData.filter(
             (d) => new Date(d.date) >= newStartTime && new Date(d.date) <= newEndTime
         );
-        setData(zoomedData.length > 1 ? zoomedData : originalData.slice(0, 2));
 
+        setData(zoomedData.length > 1 ? zoomedData : originalData.slice(0, 2));
         setTimeout(() => setIsZooming(false), 300);
     };
 
