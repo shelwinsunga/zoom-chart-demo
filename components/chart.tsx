@@ -35,6 +35,7 @@ const seedRandom = (seed: number) => {
     return x - Math.floor(x);
 };
 
+// Fancy data simulation written by Claude
 const simulateData = (start?: string, end?: string) => {
     const intervalMs = 600000;
     const startDate = start ? new Date(start) : new Date('2024-01-01T00:00:00Z');
@@ -104,6 +105,7 @@ export function ZoomableChart() {
             const [left, right] = [refAreaLeft, refAreaRight].sort();
             setStartTime(left);
             setEndTime(right);
+            // Filter data to only show the zoomed in range
             const zoomedData = originalData.filter(
                 (d) => d.date >= left && d.date <= right
             );
