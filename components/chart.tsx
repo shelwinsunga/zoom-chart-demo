@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 import { useState, useEffect, useMemo } from "react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ComposedChart, ReferenceArea, ResponsiveContainer } from "recharts"
@@ -15,6 +14,7 @@ import {
     ChartContainer,
     ChartTooltipContent,
 } from "@/components/ui/chart"
+import { MouseEvent } from 'react';
 
 const chartConfig = {
     events: {
@@ -68,7 +68,7 @@ export function ZoomableChart() {
 
     // Simulate data
     useEffect(() => {
-        setData(simulateData(startTime, endTime));
+        setData(simulateData(startTime || undefined, endTime || undefined));
     }, [startTime, endTime]);
 
     // Calculate total
@@ -77,13 +77,13 @@ export function ZoomableChart() {
         [data]
     )
 
-    const handleMouseDown = (e: React.MouseEvent<SVGElement>) => {
+    const handleMouseDown = (e: any) => {
         if (e.activeLabel) {
             setRefAreaLeft(e.activeLabel);
         }
     };
 
-    const handleMouseMove = (e: React.MouseEvent<SVGElement>) => {
+    const handleMouseMove = (e: any) => {
         if (refAreaLeft && e.activeLabel) {
             setRefAreaRight(e.activeLabel);
         }
@@ -133,66 +133,68 @@ export function ZoomableChart() {
                     config={chartConfig}
                     className="w-full h-full"
                 >
-                    <div className="flex justify-end mb-4">
-                        <Button variant="outline" onClick={handleZoomOut} disabled={!startTime && !endTime}>
-                            Reset
-                        </Button>
-                    </div>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart
-                            data={data}
-                            margin={{
-                                top: 20,
-                                right: 30,
-                                left: 20,
-                                bottom: 5,
-                            }}
-                            onMouseDown={handleMouseDown}
-                            onMouseMove={handleMouseMove}
-                            onMouseUp={handleMouseUp}
-                        >
-                            <defs>
-                                <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={chartConfig.events.color} stopOpacity={0.8} />
-                                    <stop offset="95%" stopColor={chartConfig.events.color} stopOpacity={0.1} />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis
-                                dataKey="date"
-                                tickFormatter={formatXAxis}
-                                style={{ userSelect: 'none' }}
-                            />
-                            <YAxis style={{ userSelect: 'none' }} />
-                            <Tooltip
-                                content={
-                                    <ChartTooltipContent
-                                        className="w-[200px]"
-                                        nameKey="events"
-                                        labelFormatter={(value) => new Date(value).toLocaleString()}
-                                    />
-                                }
-                            />
-                            <Legend />
-                            <Area
-                                type="monotone"
-                                dataKey="events"
-                                stroke={chartConfig.events.color}
-                                fillOpacity={1}
-                                fill="url(#colorEvents)"
-                                isAnimationActive={false}
-                            />
-                            {refAreaLeft && refAreaRight && (
-                                <ReferenceArea
-                                    x1={refAreaLeft}
-                                    x2={refAreaRight}
-                                    strokeOpacity={0.3}
-                                    fill="hsl(var(--foreground))"
-                                    fillOpacity={0.1}
+                    <div className="h-full">
+                        <div className="flex justify-end mb-4">
+                            <Button variant="outline" onClick={handleZoomOut} disabled={!startTime && !endTime}>
+                                Reset
+                            </Button>
+                        </div>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <ComposedChart
+                                data={data}
+                                margin={{
+                                    top: 20,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 5,
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseMove={handleMouseMove}
+                                onMouseUp={handleMouseUp}
+                            >
+                                <defs>
+                                    <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor={chartConfig.events.color} stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor={chartConfig.events.color} stopOpacity={0.1} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    dataKey="date"
+                                    tickFormatter={formatXAxis}
+                                    style={{ userSelect: 'none' }}
                                 />
-                            )}
-                        </ComposedChart>
-                    </ResponsiveContainer>
+                                <YAxis style={{ userSelect: 'none' }} />
+                                <Tooltip
+                                    content={
+                                        <ChartTooltipContent
+                                            className="w-[200px]"
+                                            nameKey="events"
+                                            labelFormatter={(value) => new Date(value).toLocaleString()}
+                                        />
+                                    }
+                                />
+                                <Legend />
+                                <Area
+                                    type="monotone"
+                                    dataKey="events"
+                                    stroke={chartConfig.events.color}
+                                    fillOpacity={1}
+                                    fill="url(#colorEvents)"
+                                    isAnimationActive={false}
+                                />
+                                {refAreaLeft && refAreaRight && (
+                                    <ReferenceArea
+                                        x1={refAreaLeft}
+                                        x2={refAreaRight}
+                                        strokeOpacity={0.3}
+                                        fill="hsl(var(--foreground))"
+                                        fillOpacity={0.1}
+                                    />
+                                )}
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </div>
                 </ChartContainer>
             </CardContent>
         </Card>
