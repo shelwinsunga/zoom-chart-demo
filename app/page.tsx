@@ -18,7 +18,7 @@ export default function Home() {
       <div className="flex justify-center w-full">
         <div className="flex flex-col items-center max-w-[1500px] w-full">
           <div className="w-full h-[300px] sm:h-[400px] md:h-[500px] mb-12 lg:mb-0 lg:hidden">
-            <ZoomableChart />
+            <ZoomableChart data={data} />
           </div>
           <div className="flex flex-col lg:flex-row items-center w-full">
             <div className="w-full lg:w-1/3 lg:pr-8 mb-6 lg:mb-0">
