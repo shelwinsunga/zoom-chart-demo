@@ -17,4 +17,5 @@ Chart is in `components/chart.tsx`.
 
 ## Todo:
 
-- [] Make code good
+- [ ] Make code good
+
