@@ -15,7 +15,3 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 Chart is in `components/chart.tsx`.
 
 
-## Todo:
-
-- [ ] Make code good
-
