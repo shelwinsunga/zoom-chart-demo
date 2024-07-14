@@ -27,7 +27,7 @@ export default function Home() {
                 <li>Zoom in by clicking and dragging on the chart.</li>
                 <li>Simulated event data</li>
                 <li>Scroll to zoom in/out</li>
-                <li>260 line <Link href="https://github.com/shelwinsunga/zoom-chart-demo/blob/main/components/chart.tsx"><u>source code</u></Link></li>
+                <li>280 line <Link href="https://github.com/shelwinsunga/zoom-chart-demo/blob/main/components/chart.tsx"><u>source code</u></Link></li>
               </ul>
               <div className="border-t mt-4 pt-4 text-left text-xs sm:text-sm text-foreground">
                 made by <Link href="https://twitter.com/shelwin_" target="_blank" rel="noopener noreferrer"><u>shelwin</u></Link>
