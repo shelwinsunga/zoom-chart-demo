@@ -125,18 +125,40 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
         setEndTime(originalData[originalData.length - 1].date);
     };
 
-    const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    const handleZoom = (e: React.WheelEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         e.preventDefault();
         if (!originalData.length || !chartRef.current) return;
 
-        const zoomFactor = 0.1;
-        const direction = e.deltaY < 0 ? 1 : -1;
+        let zoomFactor = 0.1;
+        let direction = 0;
+        let clientX = 0;
+
+        if ('deltaY' in e) {
+            // Mouse wheel event
+            direction = e.deltaY < 0 ? 1 : -1;
+            clientX = e.clientX;
+        } else if (e.touches.length === 2) {
+            // Pinch zoom
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const currentDistance = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+
+            if ((e as any).lastTouchDistance) {
+                direction = currentDistance > (e as any).lastTouchDistance ? 1 : -1;
+            }
+            (e as any).lastTouchDistance = currentDistance;
+
+            clientX = (touch1.clientX + touch2.clientX) / 2;
+        } else {
+            return;
+        }
+
         const currentRange = new Date(endTime || originalData[originalData.length - 1].date).getTime() -
             new Date(startTime || originalData[0].date).getTime();
         const zoomAmount = currentRange * zoomFactor * direction;
 
         const chartRect = chartRef.current.getBoundingClientRect();
-        const mouseX = e.clientX - chartRect.left;
+        const mouseX = clientX - chartRect.left;
         const chartWidth = chartRect.width;
         const mousePercentage = mouseX / chartWidth;
 
@@ -179,7 +201,7 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
                     config={chartConfig}
                     className="w-full h-full"
                 >
-                    <div className="h-full" onWheel={handleWheel} ref={chartRef}>
+                    <div className="h-full" onWheel={handleZoom} onTouchMove={handleZoom} ref={chartRef} style={{ touchAction: 'none' }}>
                         <div className="flex justify-end my-2 sm:mb-4">
                             <Button variant="outline" onClick={handleReset} disabled={!startTime && !endTime} className="text-xs sm:text-sm">
                                 Reset
