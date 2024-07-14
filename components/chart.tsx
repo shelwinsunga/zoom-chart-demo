@@ -22,6 +22,10 @@ type DataPoint = {
     events: number;
 };
 
+type ZoomableChartProps = {
+    data?: DataPoint[];
+};
+
 const chartConfig = {
     events: {
         label: "Events",
@@ -55,10 +59,6 @@ export function simulateData(start = '2024-01-01T00:00:00Z', end = '2024-01-02T0
     return simulatedData;
 }
 
-type ZoomableChartProps = {
-    data?: DataPoint[];
-};
-
 export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
     const [data, setData] = useState<DataPoint[]>(initialData || []);
     const [refAreaLeft, setRefAreaLeft] = useState<string | null>(null);
@@ -67,11 +67,10 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
     const [endTime, setEndTime] = useState<string | null>(null);
     const [originalData, setOriginalData] = useState<DataPoint[]>(initialData || []);
     const [isSelecting, setIsSelecting] = useState(false);
-    const [isZooming, setIsZooming] = useState(false);
     const chartRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (initialData && initialData.length > 0) {
+        if (initialData?.length) {
             setData(initialData);
             setOriginalData(initialData);
             setStartTime(initialData[0].date);
@@ -79,18 +78,19 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
         }
     }, [initialData]);
 
-    useEffect(() => {
-        if (startTime && endTime && !isZooming) {
-            const zoomedData = originalData.filter(
+    const zoomedData = useMemo(() => {
+        if (startTime && endTime) {
+            const filtered = originalData.filter(
                 (d) => d.date >= startTime && d.date <= endTime
             );
-            setData(zoomedData.length > 1 ? zoomedData : originalData.slice(0, 2));
+            return filtered.length > 1 ? filtered : originalData.slice(0, 2);
         }
-    }, [startTime, endTime, originalData, isZooming]);
+        return data;
+    }, [startTime, endTime, originalData, data]);
 
     const total = useMemo(
-        () => data.reduce((acc, curr) => acc + curr.events, 0),
-        [data]
+        () => zoomedData.reduce((acc, curr) => acc + curr.events, 0),
+        [zoomedData]
     )
 
     const handleMouseDown = (e: any) => {
@@ -111,10 +111,6 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
             const [left, right] = [refAreaLeft, refAreaRight].sort();
             setStartTime(left);
             setEndTime(right);
-            const zoomedData = originalData.filter(
-                (d) => d.date >= left && d.date <= right
-            );
-            setData(zoomedData.length > 1 ? zoomedData : originalData.slice(0, 2));
         }
         setRefAreaLeft(null);
         setRefAreaRight(null);
@@ -124,15 +120,11 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
     const handleReset = () => {
         setStartTime(originalData[0].date);
         setEndTime(originalData[originalData.length - 1].date);
-        setData(originalData);
     };
 
-    // Pretty optional, but it was a feature request.
     const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
         e.preventDefault();
         if (!originalData.length || !chartRef.current) return;
-
-        setIsZooming(true);
 
         const zoomFactor = 0.1;
         const direction = e.deltaY < 0 ? 1 : -1;
@@ -153,16 +145,8 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
 
         setStartTime(newStartTime.toISOString());
         setEndTime(newEndTime.toISOString());
-
-        const zoomedData = originalData.filter(
-            (d) => new Date(d.date) >= newStartTime && new Date(d.date) <= newEndTime
-        );
-
-        setData(zoomedData.length > 1 ? zoomedData : originalData.slice(0, 2));
-        setTimeout(() => setIsZooming(false), 300);
     };
 
-    // Format the x-axis ticks to display the time in 24-hour format
     const formatXAxis = (tickItem: string) => {
         const date = new Date(tickItem);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -200,7 +184,7 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
                         </div>
                         <ResponsiveContainer width="100%" height="100%">
                             <ComposedChart
-                                data={data}
+                                data={zoomedData}
                                 margin={{
                                     top: 10,
                                     right: 10,
@@ -251,7 +235,7 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
                                     stroke={chartConfig.events.color}
                                     fillOpacity={1}
                                     fill="url(#colorEvents)"
-                                    isAnimationActive={true}
+                                    isAnimationActive={false}
                                 />
                                 {refAreaLeft && refAreaRight && (
                                     <ReferenceArea
@@ -270,4 +254,3 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
         </Card>
     )
 }
-
