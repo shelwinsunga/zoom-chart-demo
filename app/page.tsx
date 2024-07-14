@@ -1,9 +1,11 @@
-import { ZoomableChart } from "@/components/chart";
+'use client'
+import { ZoomableChart, simulateData } from "@/components/chart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 
 export default function Home() {
+  const data = simulateData();
   return (
     <main className="flex min-h-screen flex-col items-center justify-start sm:justify-start md:justify-center p-4 sm:p-8 md:p-12 lg:p-24">
       <div className="w-full max-w-[1500px] mb-4 sm:mb-8 md:-mt-4 sm:-mt-8 hidden md:block">
@@ -32,7 +34,7 @@ export default function Home() {
               </div>
             </div>
             <div className="w-full lg:w-2/3 h-[300px] sm:h-[400px] md:h-[500px] hidden lg:block">
-              <ZoomableChart />
+              <ZoomableChart data={data} />
             </div>
           </div>
         </div>

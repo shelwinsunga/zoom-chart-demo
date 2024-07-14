@@ -34,7 +34,7 @@ const seedRandom = (seed: number) => {
     return x - Math.floor(x);
 };
 
-const simulateData = (start = '2024-01-01T00:00:00Z', end = '2024-01-02T00:00:00Z') => {
+export function simulateData(start = '2024-01-01T00:00:00Z', end = '2024-01-02T00:00:00Z'): DataPoint[] {
     const simulatedData = [];
     let baseValue = 50;
     for (let currentDate = new Date(start); currentDate <= new Date(end); currentDate.setTime(currentDate.getTime() + 600000)) {
@@ -53,26 +53,31 @@ const simulateData = (start = '2024-01-01T00:00:00Z', end = '2024-01-02T00:00:00
         });
     }
     return simulatedData;
+}
+
+type ZoomableChartProps = {
+    data?: DataPoint[];
 };
 
-export function ZoomableChart() {
-    const [data, setData] = useState<DataPoint[]>([]);
+export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
+    const [data, setData] = useState<DataPoint[]>(initialData || []);
     const [refAreaLeft, setRefAreaLeft] = useState<string | null>(null);
     const [refAreaRight, setRefAreaRight] = useState<string | null>(null);
     const [startTime, setStartTime] = useState<string | null>(null);
     const [endTime, setEndTime] = useState<string | null>(null);
-    const [originalData, setOriginalData] = useState<DataPoint[]>([]);
+    const [originalData, setOriginalData] = useState<DataPoint[]>(initialData || []);
     const [isSelecting, setIsSelecting] = useState(false);
     const [isZooming, setIsZooming] = useState(false);
     const chartRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const simulatedData = simulateData();
-        setData(simulatedData);
-        setOriginalData(simulatedData);
-        setStartTime(simulatedData[0].date);
-        setEndTime(simulatedData[simulatedData.length - 1].date);
-    }, []);
+        if (initialData && initialData.length > 0) {
+            setData(initialData);
+            setOriginalData(initialData);
+            setStartTime(initialData[0].date);
+            setEndTime(initialData[initialData.length - 1].date);
+        }
+    }, [initialData]);
 
     useEffect(() => {
         if (startTime && endTime && !isZooming) {
@@ -122,6 +127,7 @@ export function ZoomableChart() {
         setData(originalData);
     };
 
+    // Pretty optional, but it was a feature request.
     const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
         e.preventDefault();
         if (!originalData.length || !chartRef.current) return;
@@ -156,6 +162,7 @@ export function ZoomableChart() {
         setTimeout(() => setIsZooming(false), 300);
     };
 
+    // Format the x-axis ticks to display the time in 24-hour format
     const formatXAxis = (tickItem: string) => {
         const date = new Date(tickItem);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -263,3 +270,4 @@ export function ZoomableChart() {
         </Card>
     )
 }
+
