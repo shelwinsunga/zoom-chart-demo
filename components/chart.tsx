@@ -79,13 +79,16 @@ export function ZoomableChart({ data: initialData }: ZoomableChartProps) {
     }, [initialData]);
 
     const zoomedData = useMemo(() => {
-        if (startTime && endTime) {
-            const filtered = originalData.filter(
-                (d) => d.date >= startTime && d.date <= endTime
-            );
-            return filtered.length > 1 ? filtered : originalData.slice(0, 2);
+        if (!startTime || !endTime) {
+            return data;
         }
-        return data;
+
+        const dataPointsInRange = originalData.filter(
+            (dataPoint) => dataPoint.date >= startTime && dataPoint.date <= endTime
+        );
+
+        // Ensure we have at least two data points for the chart to prevent rendering a single dot
+        return dataPointsInRange.length > 1 ? dataPointsInRange : originalData.slice(0, 2);
     }, [startTime, endTime, originalData, data]);
 
     const total = useMemo(
